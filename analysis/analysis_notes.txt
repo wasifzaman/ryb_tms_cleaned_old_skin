@@ -1,0 +1,8 @@
+Filter by weeks
+	Sort by gender
+	Sort by Age
+	Sort by classes awarded
+	Sort by classes taken
+	
+Oil classes:
+	Add option and add to print
