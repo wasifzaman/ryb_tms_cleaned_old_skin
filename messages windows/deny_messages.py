@@ -287,3 +287,26 @@ def invoice_error(lang):
 		translate(message_box.root, english_to_chinese)
 
 	message_box.root.wait_window()
+
+def decryption_error(lang):
+	message_box = Mbox()
+	
+	message_box.newFrame("First Frame", (0, 0))
+	message_box.newFrame("Second Frame", (1, 0))
+
+	message = Labelbox(text='Unable to decrypt database with the chosen key! The key was not changed.', lang=lang, repr='fimport')
+	ok_button = Buttonbox(text='ok', lang=lang, repr='ok_button')
+	warning_image = Photo(repr='warning_image', path=images + 'ws_sm.png')
+
+	message_box.frames["First Frame"].addWidget(message, (0, 1))
+	message_box.frames["Second Frame"].addWidget(ok_button, (2, 0))
+	message_box.frames["First Frame"].addWidget(warning_image, (0, 0))
+
+	warning_image.label.config(width=80)
+	message.label.config(wraplength=200, justify=LEFT)
+	ok_button.config(cmd=message_box.dw, width=15)
+
+	if lang == 'chinese':
+		translate(message_box.root, english_to_chinese)
+
+	message_box.root.wait_window()

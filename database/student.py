@@ -1,3 +1,5 @@
+from timeclock import *
+
 class StudentInfo:
 
     def __init__(self):
@@ -49,3 +51,6 @@ class StudentInfo:
             'zip', 'cPhone', 'cPhone2', 'hPhone', 'tpd', 'tpa', 'email', 'findSchool', 'cp', 'notes']
         self.reverse_datapoint_aliases = {value:key for key, value in self.datapont_aliases.items()}
         self.ordered_datapoints_aliases = [self.reverse_datapoint_aliases[key] for key in self.ordered_datapoints]
+
+        self.timesheet = timesheet()
+        self.timesheet.defineoutformat('%m/%d/%Y', '%I:%M %p')

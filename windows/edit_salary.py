@@ -99,11 +99,12 @@ def start_window(lang, database, student_id, markerfile=False):
 
 	data_points = database.studentList[student_id].datapoints
 	window_.populate(data_points)
-	attendance_table.setData(
-		headers=attendance_table_headers,
-		data=[row[:5] for row in data_points['attinfo'][1]])
-	attendance_table.set_width(1, 1, 13)
-	attendance_table.set_width(2, 5, 14)
+	if len(data_points['attinfo'][1]) > 0:
+		attendance_table.setData(
+			headers=attendance_table_headers,
+			data=[row[:5] for row in data_points['attinfo'][1]])
+		attendance_table.set_width(1, 1, 13)
+		attendance_table.set_width(2, 5, 14)
 
 	def pick_cell(p, student_id):
 		first_cell = attendance_table.cells[p]

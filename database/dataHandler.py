@@ -135,6 +135,8 @@ class StudentDB:
         file_.close()
 
     def loadData(self):
+        file_ = open(self.pwfile, 'rb')
+        self.key = file_.read()
         cipher = AES.new(self.key, AES.MODE_CFB, self.iv)
 
         if os.path.exists(self.file):

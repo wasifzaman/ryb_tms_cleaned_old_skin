@@ -22,17 +22,43 @@ def main(lang, database, month, year, markerfile=False):
 				invoice_error(lang)
 				return
 
-			file_path = filedialog.askdirectory()
+
 			today = datetime.now()
 			date = today.strftime('%m.%d.%y')
 			time = today.strftime('%I.%M.%p')
 
+			top_window_.print_selection = 'all'
+			zero_pph_teacher_list = []
+			zero_pph_teacher_data = []
+			valid_pph_teacher_data = []
 			for teacher_id, attendance in top_window_.invoice_teacher_data.items():
+				datapoints_ = database.studentList[teacher_id].datapoints
+				data_ = [teacher_id, datapoints_['firstName'], datapoints_['lastName'], datapoints_['chineseName']]
+				
+				if 'pay_per_hour' not in datapoints_ or datapoints_['pay_per_hour'] == 0.0:
+					zero_pph_teacher_data.append(data_)
+					zero_pph_teacher_list.append(teacher_id)
+				else:
+					valid_pph_teacher_data.append(data_)
+
+			if len(zero_pph_teacher_data) > 0:
+				zero_pph_teacher_data.sort()
+				top_window_.print_selection = zero_pph(lang, zero_pph_teacher_data, valid_pph_teacher_data)
+				if not top_window_.print_selection: return
+
+			file_path = filedialog.askdirectory()
+			if file_path == '': return
+
+			for teacher_id, attendance in top_window_.invoice_teacher_data.items():
+				if top_window_.print_selection != 'all' and teacher_id in zero_pph_teacher_list:
+					print(top_window_.print_selection)
+					continue
+
 				print_reports.print_pay_entries(database, \
 					file_path + '/Salary Report ' + teacher_id + ' ' + database.school + ' ' + date + ' ' + time + '.xlsx', \
 					teacher_id,
 					attendance,
-					database.studentList[teacher_id].datapoints['pay_per_hour']
+					database.studentList[teacher_id].datapoints['pay_per_hour'] if 'pay_per_hour' in database.studentList[teacher_id].datapoints else 0.0
 				)
 				if markerfile:
 					if teacher_id not in marker:
@@ -58,17 +84,35 @@ def main(lang, database, month, year, markerfile=False):
 		top_window_.destroy()
 
 	def find_issues():
+		top_window_.data_valid = True
+		num_errors = 0
+
 		for cell_id, cell_val in invoice_table.cells.items():
 			if cell_val.label.cget('text') == 'X':
 				cell_val.label.config(bg='orange')
-				top_window_.data_valid = False
+				num_errors += 1
 			if cell_id[1] == 8:
 				try:
 					if (float(cell_val.getData()) > 12.0 or float(cell_val.getData()) == 0.0):
 						cell_val.label.config(bg='orange')
-						top_window_.data_valid = False
+						num_errors += 1
 				except ValueError:
 					continue
+
+			if cell_val.label.cget('bg') == 'orange':
+				if cell_id[1] != 8 and cell_val.label.cget('text') != 'X':
+					cell_val.label.config(bg='white')
+					num_errors -= 1
+				else:
+					try:
+						if (float(cell_val.getData()) < 12.0):
+							cell_val.label.config(bg='white')
+							num_errors -= 1
+					except ValueError:
+						continue
+
+		if num_errors > 0:
+			top_window_.data_valid = False
 
 	def create_manual_attendance():
 		if manual_attendance(lang, database):

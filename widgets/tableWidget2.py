@@ -103,7 +103,7 @@ class Table:
 
 		#delete extra cells
 		last_row = len(newdata)
-		for row in range(last_row, len(olddata)):
+		for row in range(last_row, len(olddata) + 1):
 			for col in range(0, len(self.headers) + 1):
 				self.cells[(row, col)].label.grid_forget()
 				del self.cells[(row, col)]

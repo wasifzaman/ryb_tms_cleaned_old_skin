@@ -103,6 +103,8 @@ def main(parent_frame, lang, database, markerfile):
 
 	if len(teacher_list[-1]) == 0 and len(teacher_list) != 1: teacher_list.pop()
 
+	window_.pNum = 1
+
 	def toPage(to):
 		if to == 'next':
 			if window_.pNum == len(teacher_list) - 1: return

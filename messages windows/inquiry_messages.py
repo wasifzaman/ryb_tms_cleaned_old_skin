@@ -425,3 +425,39 @@ def confirm_overwrite_checkin(lang):
 	message_box.root.wait_window()
 
 	return message_box.value
+
+def choose_encryption_prompt(lang):
+	def return_(value):
+		message_box.value = value
+		message_box.dw()
+
+	message_box = Mbox()
+
+	message_box.newFrame("First Frame", (0, 0))
+	message_box.newFrame("Second Frame", (1, 0))
+
+	message = Labelbox(text='Unable decrypt database with the chosen key! Choose a different key?', lang=lang, repr='cprint')
+	yes_button = Buttonbox(text='Yes', lang=lang, repr='yes_button')
+	no_button = Buttonbox(text='No', lang=lang, repr='no_button')
+	verify_image = Photo(repr='verify_image', path=images + 'halt_sm.png')
+
+	message_box.frames["First Frame"].addWidget(message, (0, 1))
+	message_box.frames["Second Frame"].addWidget(yes_button, (0, 0))
+	message_box.frames["Second Frame"].addWidget(no_button, (0, 1))
+	message_box.frames["First Frame"].addWidget(verify_image, (0, 0))
+
+	yes_button.widget_frame.grid(sticky=E+W, padx=5)
+	no_button.widget_frame.grid(sticky=E+W, padx=5)
+	yes_button.config(cmd=lambda: return_(True), width=10)
+	no_button.config(cmd=lambda: return_(False), width=10)
+	yes_button.label.focus_set()
+
+	verify_image.label.config(width=80)
+	message.label.config(wraplength=200, justify=LEFT)
+	
+	if lang == 'chinese':
+		translate(message_box.root, english_to_chinese)
+		
+	message_box.root.wait_window()
+
+	return message_box.value

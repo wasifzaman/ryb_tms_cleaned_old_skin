@@ -38,10 +38,19 @@ def main(parent_frame, lang, database):
 		file_path = filedialog.askopenfilename(filetypes=[('RYB database file', '.rybdb')])
 		if len(file_path) == 0: return
 
-		curdb.config(text=file_path)
+		current_db = curdb.getData()
 		database.file = file_path
-		encr_config_file.files['cfilepath'] = file_path
-		encr_config_file.save()
+
+		try:
+			database.loadData()
+		except pickle.UnpicklingError:
+			if choose_encryption_prompt(lang):
+				set_pwfile()
+				curdb.config(text=file_path)
+				encr_config_file.files['cfilepath'] = file_path
+				encr_config_file.save()
+			else:
+				database.file = current_db
 
 	def ctdb():
 		file_path = filedialog.askopenfilename(filetypes=[('Excel 97-2003 Workbook', '.xls'), ('Excel Workbook', '.xlsx')])
@@ -55,9 +64,18 @@ def main(parent_frame, lang, database):
 		file_path = filedialog.askopenfilename(filetypes=[('RYB database file', '.rybdb')])
 		if len(file_path) == 0: return
 
-		file_ = open(file_path, 'rb')
-		curpwfile.config(text=file_path)
+		current_pw_file = curpwfile.getData()
 		database.pwfile = file_path
+
+		try:
+			file_ = open(file_path, 'rb')
+			database.loadData()
+		except pickle.UnpicklingError:
+			decryption_error(lang)
+			database.pwfile = current_pw_file
+			return
+		
+		curpwfile.config(text=file_path)
 		encr_config_file.files['pwfile'] = file_path
 		encr_config_file.save()
 
@@ -91,13 +109,22 @@ def main(parent_frame, lang, database):
 		hide_tools()
 		window_.frames["Table Frame"].grid(row=0, column=0)
 		window_.frames["Button Frame"].grid(row=1, column=0)
+		sdb_salrep.main(window_.frames["Table Frame"], window_.lang, database, encr_config_file.files['markerfile'])
 
 	def show_teacher_database():
 		hide_tools()
+		sDb22.main(window_.frames["Teacher Database Frame"], window_.lang, database)
 		window_.frames["Teacher Database Frame"].grid(row=0, column=0)
 		window_.frames["Button Frame"].grid(row=1, column=0)
 
 	def show_tools():
+		app_window_widgets = []
+		find_all(window_.frames['Table Frame'], app_window_widgets, 'all')
+		find_all(window_.frames['Teacher Database Frame'], app_window_widgets, 'all')
+
+		for widget in app_window_widgets:
+			widget.destroy()
+
 		window_.frames["Table Frame"].grid_forget()
 		window_.frames["Teacher Database Frame"].grid_forget()
 		window_.frames["Button Frame"].grid_forget()
@@ -244,9 +271,6 @@ def main(parent_frame, lang, database):
 	add_teacher_button.config(cmd=lambda: addS3.main(window_.lang, database))
 	#print_simple_attendance.config(cmd=print_report_by_range_simple)
 	#convert_db.config(cmd=lambda: convert_to_encrypted(window_.lang, database))
-
-	sdb_salrep.main(window_.frames["Table Frame"], window_.lang, database, encr_config_file.files['markerfile'])
-	sDb22.main(window_.frames["Teacher Database Frame"], window_.lang, database)
 	
 	if lang == 'chinese':
 		translate(window_, english_to_chinese)
