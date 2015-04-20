@@ -6,13 +6,19 @@ class Photo:
 
 	def __init__(self, **kwargs):
 		self.repr = kwargs['repr']
-		self.path = kwargs['path']
+		if 'path' in kwargs:
+			self.path = kwargs['path']
 
 	def config(self, **kwargs):
 		if 'path' in kwargs:
 			self.path = kwargs['path']
 			self.picture = Image.open(self.path)
-			self.picture = self.picture.resize((200, 200), Image.ANTIALIAS)
+			if 'no_auto_resize' not in kwargs:
+				self.picture = self.picture.resize((200, 200), Image.ANTIALIAS)
+			self.image = ImageTk.PhotoImage(self.picture)
+			self.label.config(image=self.image)
+		if 'resize' in kwargs:
+			self.picture = self.picture.resize((kwargs['resize'][0], kwargs['resize'][1]), Image.ANTIALIAS)
 			self.image = ImageTk.PhotoImage(self.picture)
 			self.label.config(image=self.image)
 
@@ -20,11 +26,14 @@ class Photo:
 		self.parent = kwargs['parent']
 		self.row = kwargs['row']
 		self.column = kwargs['column']
+		
+		self.label = Label(self.parent)
 
-		self.picture = Image.open(self.path)
-		self.image = ImageTk.PhotoImage(self.picture)
+		if hasattr(self, 'path'):
+			self.picture = Image.open(self.path)
+			self.image = ImageTk.PhotoImage(self.picture)
+			self.label.config(image=self.image)
 
-		self.label = Label(self.parent, image=self.image)
 		self.label.grid(row=self.row, column=self.column)
 		self.label.bind('<Button-1>', lambda e: self.label.focus_set())
 

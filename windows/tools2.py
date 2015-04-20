@@ -31,7 +31,7 @@ import print_reports
 import review_invoice
 
 
-def main(parent_frame, lang, database):
+def main(parent_frame, lang, database, **kwargs):
 	encr_config_file = keeper.Keeper('keeper.db')
 
 	def change_database():
@@ -143,8 +143,9 @@ def main(parent_frame, lang, database):
 
 		encr_config_file.files['school'] = school
 		database.school = encr_config_file.files['school']
-		current_school.setData(database.school)
+		#current_school.setData(database.school)
 		encr_config_file.save()
+		kwargs['change_background']()
 
 	def reset_dbmanager_pw(lang):
 		new_pw = password_prompt(lang, encr_config_file.files['dbpw'])
@@ -202,7 +203,7 @@ def main(parent_frame, lang, database):
 	curmarkerfile = TextboxNoEdit(text='Marker', repr=None)
 	current_school = TextboxNoEdit(text='School', repr=None)
 	choose_pwfile = Buttonbox(text='Choose PW file', lang=window_.lang, repr='cpwfile')
-	choose_markerfile = Buttonbox(text='Choose Marker File', lang=window_.lang, repr='cmarkerfile')
+	choose_markerfile = Buttonbox(text='Choose marker file', lang=window_.lang, repr='cmarkerfile')
 	create_db = Buttonbox(text='Create new database', lang=window_.lang, repr='createdb')
 	create_markerfile = Buttonbox(text='Create new markerfile', lang=window_.lang, repr='createmfile')
 	import_data_button = Buttonbox(text='Import data', repr=None)

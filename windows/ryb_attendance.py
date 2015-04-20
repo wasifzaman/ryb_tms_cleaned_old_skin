@@ -62,9 +62,9 @@ def main():
 					wrong_password(window_.lang)
 					return
 
-		if optional and optional == 'add':
-			f(window_.frames["App Frame"], window_.lang, database, main_window_.require_confirm, return_to_main)
-		else:	
+		if optional == 'tools':
+			f(window_.frames["App Frame"], window_.lang, database, change_background=change_background)
+		else:
 			f(window_.frames["App Frame"], window_.lang, database)
 
 		''' hide main window '''
@@ -79,10 +79,6 @@ def main():
 		window_.frames["Return Button Frame"].grid()
 
 	def return_to_main():
-		if hasattr(main_window_, 'require_confirm') and main_window_.require_confirm[0]:
-			if not confirm_return_to_main_window(window_.lang): return
-			main_window_.require_confirm = [False]
-
 		app_window_widgets = []
 		find_all(window_.frames['App Frame'], app_window_widgets, 'all')
 
@@ -119,6 +115,12 @@ def main():
 		time = today.strftime('%I.%M.%p')
 		database.exportdb(output_path + '/RYB Teacher Backup - ' + database.school + ' ' + date + ' ' + time + '.rybdb')			
 		database_backup_successful(window_.lang)
+
+	def change_background():
+		background_ = config['BACKGROUND_IMAGES'][database.school.lower()]
+		background_ = background_ if background_ != 'None' else config['BACKGROUND_IMAGES']['default']
+		splash_image.config(path=images + background_, no_auto_resize=True)
+	
 	
 	main_window_ = Window()
 	main_window_.attributes('-fullscreen', False)
@@ -148,7 +150,7 @@ def main():
 	exit_button = Buttonbox(text='Exit', repr='exit_button') #Exit
 	print_report_button = Buttonbox(text='Print report', repr='print_report_button') #Print end of day report
 	export_button = Buttonbox(text='Export database', repr='export_button')
-	splash_image = Photo(repr='splash', path=os.path.abspath(images + 'background_IMG.jpg'))
+	splash_image = Photo(repr='splash')
 	change_language_button = Buttonbox(text='E', repr='change_language_button') #Change Language
 	
 	window_.frames["Button Frame"].addWidget(check_in_button, (1, 0))
@@ -231,6 +233,23 @@ def main():
 	else:
 		change_language_button.label.config(text='中文')
 
+	change_background()
+	
 	main_window_.mainloop()
 
-main()
+import subprocess
+cmd = 'WMIC PROCESS get Caption'
+proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+num_instances = 0
+
+for line in proc.stdout:
+	if b'RYB Teacher Attendance.exe' in line:
+		num_instances += 1
+
+if num_instances > 1:
+	config = configparser.ConfigParser()
+	config.read(os.path.abspath(os.pardir) + '\config.ini', encoding='utf-8')
+	already_running_(config['DEFAULT']['DEFAULT_LANGUAGE'])
+else:
+	main()

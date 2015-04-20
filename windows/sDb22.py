@@ -126,7 +126,8 @@ def main(parent_frame, lang, database):
 		previous_page_button.config(cmd=lambda: toPage('previous'))
 		last_page_button.config(cmd=lambda: toPage('last'))
 
-	toPage('first')
+	if len(teacher_list[0]) > 0:
+		toPage('first')
 
 	def search_student():
 		window_.student_id = search_value.getData()

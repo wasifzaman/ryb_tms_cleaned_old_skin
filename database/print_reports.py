@@ -160,7 +160,7 @@ def print_teacher_attendance_simple(database, dest_path, start_date, end_date):
         worksheet.write(r, 2, row[2])
         r += 1
 
-def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hour=1.00, max_hours=False):
+def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hour=0.00, max_hours=False):
     if len(database.studentList) == 0: return
 
     workbook = xlsxwriter.Workbook(dest_path + '.xlsx')
@@ -174,6 +174,9 @@ def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hou
 
     footer_format = workbook.add_format({'bold': True, 'bg_color': '#EBF5FF', 'border': 1})
     footer_format.set_border_color = '#E0E0E0'
+
+    footer_format_2 = workbook.add_format({'bold': True, 'bg_color': '#FFAD5C', 'border': 1})
+    footer_format_2.set_border_color = '#E0E0E0'
 
     hours_exceeded_format = workbook.add_format({'bold': True, 'bg_color': 'red', 'border': 1, 'font_color': 'yellow'})
     footer_format.set_border_color = '#E0E0E0'
@@ -213,6 +216,7 @@ def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hou
 
     #total hours
     total_time = 0
+    total_salary = 0
 
     r = 4
     for entry in pay_entries.values():
@@ -222,6 +226,7 @@ def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hou
         time_clocked = checkout - checkin
         decimal_time = stringtime_to_decimal(str(time_clocked))
         total_time += decimal_time
+        total_salary += float(decimal_time * pay_per_hour)
         #print()
 
         worksheet.write(r, 0, entry[0])
@@ -245,6 +250,7 @@ def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hou
                             'Elmhurst': '艾姆赫斯特学校'}
 
     worksheet.write(r, 3, school_translation[database.school] + ':', footer_format)
+    worksheet.write(r, 4, "%.2f" % total_salary, footer_format)
     r += 2
     worksheet.write(r, 3, "现金工资:", footer_format)
     r += 1
@@ -254,8 +260,18 @@ def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hou
     r += 2
     worksheet.write(r, 3, "合计薪水:", footer_format)
     
+    r += 3
+
+    for row in range(r, r+2):
+        for cell in range(0, 5):
+            worksheet.write(row, cell, ' ', footer_format_2)
+
+    worksheet.write(r, 3, "工资拿到日期:", footer_format_2)
+    r += 1
+    worksheet.write(r, 3, "老师签字:", footer_format_2)
+
+    
     if max_hours and max_hours < total_time:
-        
         r += 1
 
         for column in range(0, 5):
@@ -265,5 +281,7 @@ def print_pay_entries(database, dest_path, employee_id, pay_entries, pay_per_hou
         worksheet.write(r, 1, str(total_time - max_hours), hours_exceeded_format)
 
     database.saveData()
+
+    workbook.close()
 
     return True

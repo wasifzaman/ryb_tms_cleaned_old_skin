@@ -151,8 +151,9 @@ def start_window(lang, database, student_id, markerfile=False):
 		today = datetime.now()
 		date = today.strftime('%m.%d.%y')
 		time = today.strftime('%I.%M.%p')
-		file_name = file_path + '/Salary Report ' + database.school + ' ' + date + ' ' + time + '.xlsx'
-		printed = print_reports.print_pay_entries(database, file_name, student_id, window_.picked, pay_per_hour.getData(), False) #false is for max_hours
+		pay_per_hour_ = database.studentList[student_id].datapoints['pay_per_hour'] if 'pay_per_hour' in database.studentList[student_id].datapoints else 0.0
+		file_name = file_path + '/' + database.studentList[student_id].datapoints['chineseName'] + ' ' + student_id + ' ' + database.school + ' ' + date + ' ' + time + ' 薪酬报告' + '.xlsx'
+		printed = print_reports.print_pay_entries(database, file_name, student_id, window_.picked, pay_per_hour_, False) #false is for max_hours
 		if markerfile:
 			if student_id not in marker:
 				marker[student_id] = {}

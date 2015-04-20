@@ -230,7 +230,7 @@ class StudentDB:
         shutil.copyfile(self.file, dest_path)
 
     def get_monthly_invoice(self, month, year):
-        header = ['Date', 'Barcode', 'Chinese Name', 'First Name', 'Last Name', 'Check-in', 'Check-out', 'Hours worked']
+        header = ['Date', 'Barcode', 'Chinese name', 'First name', 'Last name', 'Check-in time', 'Check-out time', 'Hours worked']
         return_list = []
         return_teachers = {}
         gap = ['' for i in range(0, len(header))]
@@ -297,5 +297,5 @@ class StudentDB:
         attendance_table = self.studentList[barcode].datapoints['attinfo']
         for attendance in attendance_table[1]:
             if attendance[0] == date:
-                return attendance_table[0], attendance
+                return ['Date', 'Check-in time', 'Start time', 'Check-out time', 'Confirm time', 'School'], attendance
         return False

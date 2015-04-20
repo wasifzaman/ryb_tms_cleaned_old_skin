@@ -51,11 +51,11 @@ def main(lang, database, month, year, markerfile=False):
 
 			for teacher_id, attendance in top_window_.invoice_teacher_data.items():
 				if top_window_.print_selection != 'all' and teacher_id in zero_pph_teacher_list:
-					print(top_window_.print_selection)
+					#print(top_window_.print_selection)
 					continue
 
 				print_reports.print_pay_entries(database, \
-					file_path + '/Salary Report ' + teacher_id + ' ' + database.school + ' ' + date + ' ' + time + '.xlsx', \
+					file_path + '/' + database.studentList[teacher_id].datapoints['chineseName'] + ' ' + teacher_id + ' ' + database.school + ' ' + date + ' ' + time + ' 薪酬报告' + '.xlsx', \
 					teacher_id,
 					attendance,
 					database.studentList[teacher_id].datapoints['pay_per_hour'] if 'pay_per_hour' in database.studentList[teacher_id].datapoints else 0.0
@@ -70,13 +70,13 @@ def main(lang, database, month, year, markerfile=False):
 						for row_num in attendance:
 							marker[teacher_id]['row_color'][row_num] = marker[teacher_id]['color_set'][marker[teacher_id]['current_color']]
 					else:
-						print(teacher_id, ' in marker file, appending..')
+						#print(teacher_id, ' in marker file, appending..')
 						marker[teacher_id]['current_color'] = (marker[teacher_id]['current_color'] + 1) % len(marker[teacher_id]['color_set'])
-						print(marker[teacher_id]['current_color'])
+						#print(marker[teacher_id]['current_color'])
 						for row_num in attendance:
 							marker[teacher_id]['row_color'][row_num] = marker[teacher_id]['color_set'][marker[teacher_id]['current_color']]
 						marker[teacher_id]['paid_set'].update(attendance)
-					print(marker)
+					#print(marker)
 					pickle.dump(marker, open(markerfile, "wb"))
 
 			print_succesful(lang)
@@ -127,6 +127,9 @@ def main(lang, database, month, year, markerfile=False):
 
 			invoice_table.remove_headers_numbers()
 			find_issues()
+
+			if lang == 'chinese':
+				translate(window_, english_to_chinese)
 
 	top_window_ = Window(top=True)
 	top_window_.attributes('-fullscreen', False)
@@ -179,6 +182,8 @@ def main(lang, database, month, year, markerfile=False):
 	invoice_table.cells[(5, 1)].label.config(bg='lightgreen')
 	invoice_table.cells[(5, 2)].label.config(bg='lightgreen')
 
+	invoice_table.set_width(1, 8, 11)
+
 	find_issues()
 
 	return_button.config(cmd=lambda: return_(True))
@@ -186,3 +191,6 @@ def main(lang, database, month, year, markerfile=False):
 	manual_attendance_button.config(cmd=create_manual_attendance)
 
 	invoice_table.canvas.config(width=900, height=550)
+
+	if lang == 'chinese':
+		translate(window_, english_to_chinese)

@@ -136,6 +136,9 @@ def manual_attendance(lang, database):
 		attendance_date.yEntry.config(state=DISABLED, disabledbackground='white', disabledforeground='black')
 		return_button.widget_frame.grid(row=1, column=0, pady=1)
 
+		if lang == 'chinese':
+			translate(message_box.root, english_to_chinese)
+
 	message_box = Mbox()
 	message_box.root.resizable(0, 0)
 	message_box.root.grab_set()
@@ -217,6 +220,9 @@ def manual_attendance(lang, database):
 		translate(message_box.root, english_to_chinese)
 
 	barcode.setData('RYB-')
+
+	if lang == 'chinese':
+		translate(message_box.root, english_to_chinese)
 
 	message_box.root.wait_window()
 

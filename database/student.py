@@ -16,7 +16,7 @@ class StudentInfo:
             "cAwarded": 0, "cRemaining": 0,
             "findSchool": '',
             "notes": '',
-            "attinfo": [['Date', 'Check-In Time', 'Start Time', 'Check-Out Time', 'Confirm Time', 'School'], []],
+            "attinfo": [['Date', 'Check-in time', 'Start time', 'Check-out time', 'Confirm time', 'School'], []],
             "portr": '',
             "ctime": '', "expire": '', "cp": "N",
             "paid_entries": {},
